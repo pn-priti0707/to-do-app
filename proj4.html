@@ -1,0 +1,194 @@
+<!-- task-4 -->
+
+<!-- Develop a basic to-do app that enables a user to add maintain tasks.
+
+Allow users to add/organize items in lists. Mark them Completed, Edit them, Set Date & Time of tasks -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>To‑Do App</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #eef1f5;
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      padding: 40px;
+    }
+
+    .container {
+      background: #fff;
+      padding: 25px;
+      width: 420px;
+      border-radius: 15px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    }
+
+    h2 { margin-top: 0; text-align: center; }
+
+    .add-section {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    input, button {
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+    }
+
+    button {
+      cursor: pointer;
+      background: #0d6efd;
+      color: white;
+      border: none;
+      transition: 0.2s;
+    }
+    button:hover { opacity: 0.9; }
+
+    .task {
+      background: #f5f7fa;
+      padding: 12px;
+      margin-bottom: 10px;
+      border-radius: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .task.completed .text {
+      text-decoration: line-through;
+      color: gray;
+    }
+
+    .actions button {
+      padding: 6px 10px;
+      font-size: 13px;
+      border-radius: 6px;
+    }
+
+    .edit { background: #ffc107; color: #000; }
+    .delete { background: #dc3545; }
+    .done { background: #28a745; }
+
+    .datetime {
+      font-size: 13px;
+      margin-top: 3px;
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h2>To‑Do List App</h2>
+
+    <div class="add-section">
+      <input type="text" id="taskInput" placeholder="Enter task..." />
+      <input type="datetime-local" id="taskDateTime" />
+      <button id="addBtn">Add Task</button>
+    </div>
+
+    <div id="taskList"></div>
+  </div>
+
+  <script>
+    const taskInput = document.getElementById('taskInput');
+    const taskDateTime = document.getElementById('taskDateTime');
+    const taskList = document.getElementById('taskList');
+    const addBtn = document.getElementById('addBtn');
+
+    let tasks = [];
+
+    function renderTasks() {
+      taskList.innerHTML = '';
+
+      tasks.forEach((task, index) => {
+        const taskDiv = document.createElement('div');
+        taskDiv.className = 'task' + (task.completed ? ' completed' : '');
+
+        const textDiv = document.createElement('div');
+        textDiv.innerHTML = `<div class="text">${task.text}</div>` +
+                            (task.datetime ? `<div class="datetime">⏰ ${task.datetime}</div>` : '');
+
+        const actions = document.createElement('div');
+        actions.className = 'actions';
+
+        const completeBtn = document.createElement('button');
+        completeBtn.textContent = 'Done';
+        completeBtn.className = 'done';
+        completeBtn.onclick = () => toggleComplete(index);
+
+        const editBtn = document.createElement('button');
+        editBtn.textContent = 'Edit';
+        editBtn.className = 'edit';
+        editBtn.onclick = () => editTask(index);
+
+        const deleteBtn = document.createElement('button');
+        deleteBtn.textContent = 'Delete';
+        deleteBtn.className = 'delete';
+        deleteBtn.onclick = () => deleteTask(index);
+
+        actions.appendChild(completeBtn);
+        actions.appendChild(editBtn);
+        actions.appendChild(deleteBtn);
+
+        taskDiv.appendChild(textDiv);
+        taskDiv.appendChild(actions);
+
+        taskList.appendChild(taskDiv);
+      });
+    }
+
+    function addTask() {
+      if (!taskInput.value.trim()) return alert('Please enter a task');
+
+      tasks.push({
+        text: taskInput.value,
+        datetime: taskDateTime.value,
+        completed: false
+      });
+
+      taskInput.value = '';
+      taskDateTime.value = '';
+      renderTasks();
+    }
+
+    function deleteTask(index) {
+      tasks.splice(index, 1);
+      renderTasks();
+    }
+
+    function toggleComplete(index) {
+      tasks[index].completed = !tasks[index].completed;
+      renderTasks();
+    }
+
+    function editTask(index) {
+      const newText = prompt('Edit task:', tasks[index].text);
+      if (newText !== null) tasks[index].text = newText;
+
+      const newDate = prompt('Edit date/time (YYYY-MM-DD HH:MM):', tasks[index].datetime);
+      if (newDate !== null) tasks[index].datetime = newDate;
+
+      renderTasks();
+    }
+
+    addBtn.addEventListener('click', addTask);
+
+    // Enter key support
+    taskInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') addTask();
+    });
+  </script>
+</body>
+</html>
